@@ -1522,3 +1522,540 @@
         .testi-author { flex-wrap: wrap; }
         .verified-badge { margin-left: 0; }
     }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   KISAN AI PAGE STYLES - Agricultural Color Palette
+   Colors: Fresh Greens (#16A34A, #22C55E, #86EFAC), Earth Browns (#92400E, #A16207), Clean Whites
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── KISAN HERO ─── */
+.kisan-hero {
+    background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+    min-height: 70vh;
+    padding: 140px 64px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.kisan-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(34,197,94,0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.kisan-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: -50px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.kisan-hero-content {
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+}
+
+.kisan-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(34,197,94,0.2);
+    border: 1px solid rgba(34,197,94,0.4);
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #86efac;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.6s ease both;
+}
+
+.kisan-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.6s 0.1s ease both;
+}
+
+.kisan-hero h1 span { color: #86efac; }
+
+.kisan-subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.6s 0.2s ease both;
+}
+
+.kisan-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    animation: fadeInUp 0.6s 0.3s ease both;
+}
+
+.kisan-stat {
+    text-align: center;
+}
+
+.kisan-stat-num {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+}
+
+.kisan-stat-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+/* ─── KISAN INPUT SECTION ─── */
+.kisan-input-section {
+    background: linear-gradient(180deg, #f0fdf4 0%, var(--white) 100%);
+    padding: 64px;
+    position: relative;
+}
+
+.kisan-input-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #16a34a 33%, #facc15 33%, #facc15 66%, #16a34a 66%);
+}
+
+.kisan-input-container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.kisan-input-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #14532d;
+    margin-bottom: 12px;
+}
+
+.kisan-input-subtitle {
+    font-size: 16px;
+    color: #4b5563;
+    margin-bottom: 40px;
+}
+
+.kisan-form {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(22,163,74,0.1);
+    border: 1px solid #dcfce7;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.kisan-form-group {
+    flex: 1;
+    min-width: 220px;
+    text-align: left;
+}
+
+.kisan-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #166534;
+    margin-bottom: 8px;
+}
+
+.kisan-select, .kisan-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #dcfce7;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: #1f2937;
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.kisan-select:focus, .kisan-input:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34,197,94,0.15);
+}
+
+.kisan-select option {
+    padding: 10px;
+}
+
+.kisan-btn-primary {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(22,163,74,0.35);
+    height: fit-content;
+}
+
+.kisan-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(22,163,74,0.45);
+}
+
+.kisan-btn-icon {
+    transition: transform 0.2s;
+}
+
+.kisan-btn-primary:hover .kisan-btn-icon {
+    transform: translateX(4px);
+}
+
+/* ─── KISAN RESULTS SECTION ─── */
+.kisan-results-section {
+    background: var(--grey-light);
+    padding: 64px;
+}
+
+.kisan-results-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.kisan-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.kisan-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #16a34a, #22c55e);
+    border-radius: 4px 0 0 4px;
+    transform: scaleY(0);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    transform-origin: bottom;
+}
+
+.kisan-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(22,163,74,0.15);
+    border-color: rgba(34,197,94,0.3);
+}
+
+.kisan-card:hover::before {
+    transform: scaleY(1);
+}
+
+.kisan-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.kisan-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+}
+
+.kisan-card:hover .kisan-card-icon {
+    transform: scale(1.1) rotate(-3deg);
+}
+
+.icon-crop { background: #dcfce7; color: #16a34a; }
+.icon-weather { background: #dbeafe; color: #2563eb; }
+.icon-mandi { background: #fef3c7; color: #d97706; }
+
+.kisan-card-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #14532d;
+}
+
+.kisan-card-content {
+    min-height: 140px;
+}
+
+.kisan-card-empty {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.7;
+    font-style: italic;
+}
+
+.kisan-card-data {
+    display: none;
+}
+
+.kisan-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.kisan-data-item:last-child {
+    border-bottom: none;
+}
+
+.kisan-data-label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.kisan-data-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.kisan-price-highlight {
+    background: linear-gradient(90deg, #fef3c7, transparent);
+    margin: 0 -32px;
+    padding: 12px 32px;
+    border-left: 3px solid #f59e0b;
+}
+
+.kisan-price {
+    color: #16a34a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.kisan-weather-main {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.kisan-weather-temp {
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: #14532d;
+}
+
+.kisan-weather-condition {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   KISAN AI MOBILE RESPONSIVE STYLES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Tablet ≤ 1024px */
+@media (max-width: 1024px) {
+    .kisan-hero {
+        padding: 120px 40px 60px;
+        min-height: 60vh;
+    }
+    
+    .kisan-hero h1 {
+        font-size: 42px;
+    }
+    
+    .kisan-stats {
+        gap: 32px;
+    }
+    
+    .kisan-input-section {
+        padding: 48px 32px;
+    }
+    
+    .kisan-form {
+        padding: 32px;
+    }
+    
+    .kisan-results-section {
+        padding: 48px 32px;
+    }
+    
+    .kisan-results-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile ≤ 768px */
+@media (max-width: 768px) {
+    .kisan-hero {
+        padding: 100px 20px 48px;
+        min-height: auto;
+    }
+    
+    .kisan-hero h1 {
+        font-size: 32px;
+    }
+    
+    .kisan-subtitle {
+        font-size: 15px;
+    }
+    
+    .kisan-stats {
+        flex-wrap: wrap;
+        gap: 24px;
+    }
+    
+    .kisan-stat {
+        flex: 0 0 calc(50% - 12px);
+    }
+    
+    .kisan-stat:last-child {
+        flex: 0 0 100%;
+    }
+    
+    .kisan-stat-num {
+        font-size: 28px;
+    }
+    
+    .kisan-input-section {
+        padding: 40px 20px;
+    }
+    
+    .kisan-input-title {
+        font-size: 24px;
+    }
+    
+    .kisan-input-subtitle {
+        font-size: 14px;
+    }
+    
+    .kisan-form {
+        padding: 24px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .kisan-form-group {
+        min-width: 100%;
+    }
+    
+    .kisan-btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .kisan-results-section {
+        padding: 40px 20px;
+    }
+    
+    .kisan-results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .kisan-card {
+        padding: 24px;
+    }
+    
+    .kisan-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .kisan-price-highlight {
+        margin: 0 -24px;
+        padding: 12px 24px;
+    }
+}
+
+/* Small Mobile ≤ 480px */
+@media (max-width: 480px) {
+    .kisan-hero h1 {
+        font-size: 26px;
+    }
+    
+    .kisan-badge {
+        font-size: 12px;
+        padding: 6px 14px;
+    }
+    
+    .kisan-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .kisan-stat {
+        flex: none;
+    }
+    
+    .kisan-stat-num {
+        font-size: 24px;
+    }
+    
+    .kisan-input-title {
+        font-size: 22px;
+    }
+    
+    .kisan-form {
+        padding: 20px;
+    }
+    
+    .kisan-card-icon {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .kisan-card-title {
+        font-size: 16px;
+    }
+    
+    .kisan-weather-temp {
+        font-size: 28px;
+    }
+}
