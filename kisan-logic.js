@@ -505,48 +505,329 @@ const cropRecommendations = {
     }
 };
 
-// Weather mock data generator
-function generateWeatherData(state, crop) {
-    const baseTemps = {
-        'rajasthan': 35, 'gujarat': 32, 'punjab': 28, 'haryana': 29,
-        'maharashtra': 30, 'karnataka': 28, 'tamil-nadu': 31, 'kerala': 29,
-        'west-bengal': 28, 'bihar': 30, 'odisha': 31, 'assam': 27,
-        'himachal-pradesh': 22, 'uttarakhand': 24, 'madhya-pradesh': 29,
-        'uttar-pradesh': 30, 'andhra-pradesh': 33, 'telangana': 32
-    };
+// ═══════════════════════════════════════════════════════════════════════
+// WEATHER SERVICE - OpenWeatherMap API + Robust Mock Fallback
+// ═══════════════════════════════════════════════════════════════════════
+
+// API Configuration - Replace with your actual API key from openweathermap.org
+// Get free API key at: https://home.openweathermap.org/users/sign_up
+const WEATHER_API_KEY = ''; // Leave empty to use Mock Weather Service
+const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
+// State Capitals mapping for weather API calls
+const stateCapitals = {
+    'andhra-pradesh': 'Amaravati',
+    'arunachal-pradesh': 'Itanagar',
+    'assam': 'Dispur',
+    'bihar': 'Patna',
+    'chhattisgarh': 'Raipur',
+    'goa': 'Panaji',
+    'gujarat': 'Gandhinagar',
+    'haryana': 'Chandigarh',
+    'himachal-pradesh': 'Shimla',
+    'jharkhand': 'Ranchi',
+    'karnataka': 'Bengaluru',
+    'kerala': 'Thiruvananthapuram',
+    'madhya-pradesh': 'Bhopal',
+    'maharashtra': 'Mumbai',
+    'manipur': 'Imphal',
+    'meghalaya': 'Shillong',
+    'mizoram': 'Aizawl',
+    'nagaland': 'Kohima',
+    'odisha': 'Bhubaneswar',
+    'punjab': 'Chandigarh',
+    'rajasthan': 'Jaipur',
+    'sikkim': 'Gangtok',
+    'tamil-nadu': 'Chennai',
+    'telangana': 'Hyderabad',
+    'tripura': 'Agartala',
+    'uttar-pradesh': 'Lucknow',
+    'uttarakhand': 'Dehradun',
+    'west-bengal': 'Kolkata'
+};
+
+// Monthly rain probability (%) by state type
+const monthlyRainProbability = {
+    // Monsoon heavy states
+    'kerala': [3, 5, 12, 35, 65, 85, 90, 88, 75, 45, 20, 8],
+    'assam': [8, 12, 25, 55, 75, 90, 92, 88, 80, 55, 25, 10],
+    'west-bengal': [5, 8, 18, 45, 70, 85, 88, 85, 78, 50, 22, 8],
+    'odisha': [6, 10, 20, 40, 65, 82, 88, 85, 75, 48, 25, 10],
+    // Moderate monsoon
+    'maharashtra': [2, 3, 8, 15, 25, 65, 75, 70, 55, 30, 12, 4],
+    'karnataka': [3, 5, 10, 25, 45, 70, 78, 72, 60, 35, 18, 6],
+    'andhra-pradesh': [4, 6, 12, 20, 35, 55, 65, 60, 50, 30, 15, 6],
+    'tamil-nadu': [15, 20, 15, 18, 25, 35, 30, 35, 45, 65, 55, 35],
+    // Northwest - monsoon dependent
+    'punjab': [12, 15, 22, 28, 35, 55, 75, 72, 48, 22, 8, 10],
+    'haryana': [10, 12, 20, 25, 30, 50, 72, 70, 45, 20, 8, 8],
+    'uttar-pradesh': [8, 10, 15, 20, 28, 52, 70, 68, 50, 25, 8, 6],
+    // Arid states
+    'rajasthan': [5, 6, 8, 8, 12, 25, 45, 40, 25, 12, 5, 4],
+    'gujarat': [2, 3, 5, 8, 15, 35, 55, 48, 35, 18, 8, 3],
+    // Central
+    'madhya-pradesh': [5, 8, 12, 15, 22, 48, 72, 70, 55, 28, 12, 5],
+    'chhattisgarh': [8, 10, 18, 25, 35, 65, 82, 80, 68, 35, 15, 8],
+    // Hill states
+    'himachal-pradesh': [15, 20, 35, 45, 55, 68, 75, 72, 58, 35, 18, 15],
+    'uttarakhand': [12, 18, 30, 42, 52, 65, 78, 75, 62, 38, 20, 12],
+    // Northeast
+    'manipur': [10, 15, 30, 55, 72, 88, 92, 90, 82, 58, 28, 12],
+    'meghalaya': [12, 18, 35, 58, 78, 92, 95, 92, 85, 62, 32, 15],
+    'mizoram': [8, 12, 28, 52, 70, 88, 92, 90, 80, 55, 25, 10],
+    'nagaland': [10, 15, 32, 55, 72, 88, 92, 90, 82, 58, 28, 12],
+    'tripura': [8, 12, 25, 52, 70, 88, 92, 88, 78, 52, 22, 10],
+    'arunachal-pradesh': [15, 22, 38, 58, 75, 90, 95, 92, 85, 62, 35, 18],
+    'jharkhand': [8, 10, 18, 25, 35, 65, 82, 80, 68, 35, 15, 8],
+    'bihar': [8, 10, 15, 20, 28, 55, 75, 72, 58, 28, 12, 8],
+    // Others
+    'goa': [2, 3, 5, 15, 35, 85, 92, 88, 72, 35, 12, 4],
+    'sikkim': [12, 18, 35, 55, 72, 88, 92, 90, 82, 58, 32, 15],
+    'telangana': [4, 6, 10, 18, 28, 55, 68, 65, 52, 32, 15, 6],
+    'default': [8, 10, 15, 25, 40, 65, 75, 72, 58, 32, 15, 8]
+};
+
+// Weather condition descriptions with icons
+const weatherConditions = {
+    'Clear': { icon: '☀️', desc: 'Clear Sky', farmingTip: 'Good conditions for outdoor activities' },
+    'Clouds': { icon: '☁️', desc: 'Cloudy', farmingTip: 'Moderate conditions - good for field work' },
+    'Rain': { icon: '🌧️', desc: 'Rainy', farmingTip: 'Protect harvested crops, good for sowing' },
+    'Drizzle': { icon: '🌦️', desc: 'Light Rain', farmingTip: 'Good for seed germination' },
+    'Thunderstorm': { icon: '⛈️', desc: 'Thunderstorm', farmingTip: 'Stay indoors, secure equipment' },
+    'Snow': { icon: '❄️', desc: 'Snow', farmingTip: 'Protect crops from frost damage' },
+    'Mist': { icon: '🌫️', desc: 'Misty', farmingTip: 'High humidity - watch for fungal diseases' },
+    'Fog': { icon: '🌫️', desc: 'Foggy', farmingTip: 'Delay spraying operations' },
+    'Haze': { icon: '😶\u200d🌫️', desc: 'Hazy', farmingTip: 'Reduce outdoor work if air quality poor' }
+};
+
+// Base temperatures by state (°C) for realistic simulation
+const stateBaseTemperatures = {
+    'rajasthan': { summer: 40, winter: 20, monsoon: 32 },
+    'gujarat': { summer: 38, winter: 22, monsoon: 30 },
+    'punjab': { summer: 38, winter: 15, monsoon: 32 },
+    'haryana': { summer: 40, winter: 14, monsoon: 33 },
+    'maharashtra': { summer: 35, winter: 22, monsoon: 28 },
+    'karnataka': { summer: 33, winter: 20, monsoon: 26 },
+    'tamil-nadu': { summer: 35, winter: 25, monsoon: 29 },
+    'kerala': { summer: 32, winter: 26, monsoon: 28 },
+    'west-bengal': { summer: 35, winter: 18, monsoon: 30 },
+    'bihar': { summer: 38, winter: 16, monsoon: 32 },
+    'odisha': { summer: 37, winter: 20, monsoon: 30 },
+    'assam': { summer: 33, winter: 18, monsoon: 29 },
+    'himachal-pradesh': { summer: 28, winter: 8, monsoon: 22 },
+    'uttarakhand': { summer: 30, winter: 10, monsoon: 25 },
+    'madhya-pradesh': { summer: 40, winter: 18, monsoon: 30 },
+    'uttar-pradesh': { summer: 40, winter: 15, monsoon: 32 },
+    'andhra-pradesh': { summer: 40, winter: 24, monsoon: 30 },
+    'telangana': { summer: 40, winter: 22, monsoon: 29 },
+    'chhattisgarh': { summer: 38, winter: 18, monsoon: 29 },
+    'jharkhand': { summer: 36, winter: 16, monsoon: 28 },
+    'rajasthan': { summer: 42, winter: 18, monsoon: 33 },
+    'goa': { summer: 32, winter: 24, monsoon: 28 },
+    'kerala': { summer: 31, winter: 25, monsoon: 27 },
+    'default': { summer: 35, winter: 18, monsoon: 28 }
+};
+
+/**
+ * Get current season based on month
+ */
+function getCurrentSeason() {
+    const month = new Date().getMonth(); // 0-11
+    if (month >= 2 && month <= 5) return 'summer';
+    if (month >= 6 && month <= 8) return 'monsoon';
+    if (month >= 9 && month <= 10) return 'post-monsoon';
+    return 'winter';
+}
+
+/**
+ * Generate realistic mock weather data
+ */
+function generateMockWeatherData(state, crop) {
+    const currentMonth = new Date().getMonth();
+    const season = getCurrentSeason();
     
-    const baseTemp = baseTemps[state] || 28;
-    const variation = Math.floor(Math.random() * 6) - 3;
-    const temp = baseTemp + variation;
+    // Get base temperature for state and season
+    const baseTemp = stateBaseTemperatures[state] || stateBaseTemperatures['default'];
+    let temp;
     
-    const conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Light Rain', 'Clear'];
-    const condition = conditions[Math.floor(Math.random() * conditions.length)];
+    switch(season) {
+        case 'summer': temp = baseTemp.summer; break;
+        case 'winter': temp = baseTemp.winter; break;
+        case 'monsoon': temp = baseTemp.monsoon; break;
+        default: temp = (baseTemp.summer + baseTemp.winter) / 2;
+    }
     
-    const humidity = 45 + Math.floor(Math.random() * 35);
-    const rainfall = Math.floor(Math.random() * 15);
+    // Add variation (±3°C)
+    temp += Math.floor(Math.random() * 7) - 3;
     
-    const cropTips = {
-        'wheat': temp > 30 ? 'Consider irrigation if soil is dry' : 'Favorable conditions',
-        'rice': 'Ensure adequate water standing in fields',
-        'cotton': temp > 32 ? 'Watch for pest activity in heat' : 'Good growing weather',
-        'bajra': 'Heat tolerant - doing well',
-        'mustard': temp < 25 ? 'Flowering stage - protect from frost' : 'Normal growth',
-        'default': 'Monitor crop health regularly'
-    };
+    // Get rain probability for state and month
+    const rainProbs = monthlyRainProbability[state] || monthlyRainProbability['default'];
+    const rainProbability = rainProbs[currentMonth];
+    
+    // Determine condition based on rain probability
+    let condition, humidity, weatherDesc;
+    const rand = Math.random() * 100;
+    
+    if (rainProbability > 70 && rand < rainProbability) {
+        condition = rand > 80 ? 'Thunderstorm' : (rand > 60 ? 'Rain' : 'Drizzle');
+        humidity = 75 + Math.floor(Math.random() * 20);
+        weatherDesc = weatherConditions[condition];
+    } else if (rainProbability > 40 && rand < rainProbability + 20) {
+        condition = 'Clouds';
+        humidity = 60 + Math.floor(Math.random() * 20);
+        weatherDesc = weatherConditions['Clouds'];
+    } else {
+        condition = season === 'monsoon' ? 'Clouds' : 'Clear';
+        humidity = season === 'monsoon' ? 70 + Math.floor(Math.random() * 15) : 40 + Math.floor(Math.random() * 25);
+        weatherDesc = weatherConditions[condition];
+    }
+    
+    // Generate agricultural tips based on conditions
+    const farmingTip = generateFarmingTip(condition, temp, rainProbability, crop, season);
+    
+    // Heat or cold alerts
+    let alert = null;
+    if (temp > 40) alert = '🔥 Heat wave conditions - provide irrigation and shade';
+    else if (temp > 38) alert = '⚠️ High temperature - increase irrigation frequency';
+    else if (temp < 5) alert = '❄️ Frost alert - protect sensitive crops';
     
     return {
         temperature: temp,
         condition: condition,
+        conditionDesc: weatherDesc.desc,
+        conditionIcon: weatherDesc.icon,
         humidity: humidity,
-        rainfall: rainfall,
-        forecast: `${rainfall + 5}mm expected next 3 days`,
-        alert: temp > 38 ? 'Heat wave alert - provide shade/irrigation' : null,
-        cropTip: cropTips[crop] || cropTips['default']
+        rainProbability: rainProbability,
+        rainAmount: rainProbability > 50 ? Math.floor(Math.random() * 20) + 5 : 0,
+        forecast: `${rainProbability}% chance of rain today`,
+        alert: alert,
+        farmingTip: farmingTip,
+        source: 'Mock Weather Service',
+        season: season
     };
 }
 
+/**
+ * Generate context-aware farming tips
+ */
+function generateFarmingTip(condition, temp, rainProb, crop, season) {
+    const cropLower = crop.toLowerCase();
+    
+    // Rain-related tips
+    if (rainProb > 70) {
+        if (cropLower.includes('wheat') && season === 'winter') return '🌾 Good moisture for wheat growth. Avoid waterlogging.';
+        if (cropLower.includes('rice')) return '🌾 Excellent for rice! Maintain 5cm standing water.';
+        if (cropLower.includes('cotton')) return '🌱 Avoid waterlogging - ensure proper drainage for cotton.';
+        return '💧 High rain probability - prepare drainage, protect harvested crops.';
+    }
+    
+    if (rainProb > 40) {
+        return '🌦️ Moderate rain expected - Good sowing conditions if followed by sunshine.';
+    }
+    
+    // Temperature-based tips
+    if (temp > 35) {
+        if (cropLower.includes('cotton')) return '☀️ Cotton loves heat! Ensure adequate moisture.';
+        if (cropLower.includes('wheat')) return '⚠️ Heat stress risk for wheat. Increase irrigation.';
+        return '🔥 High temperatures - irrigate during early morning or evening.';
+    }
+    
+    if (temp < 15) {
+        if (cropLower.includes('mustard') || cropLower.includes('wheat')) return '❄️ Cool weather good for Rabi crops. Protect from frost.';
+        return '🥶 Cold conditions - delay planting warm-season crops.';
+    }
+    
+    // Condition-specific tips
+    if (condition === 'Clear') {
+        if (season === 'summer') return '☀️ Sunny day - Good for harvesting. Schedule irrigation.';
+        return '☀️ Clear skies - Ideal for field operations and harvesting.';
+    }
+    
+    if (condition === 'Clouds') {
+        return '☁️ Cloudy conditions - Good for transplanting and sowing.';
+    }
+    
+    // Default seasonal tips
+    const seasonalTips = {
+        'summer': '☀️ Summer season - Focus on water management and pest control.',
+        'monsoon': '🌧️ Monsoon active - Monitor drainage, watch for pests.',
+        'winter': '❄️ Rabi season - Good time for wheat, mustard sowing.',
+        'post-monsoon': '🍂 Post-monsoon - Good for vegetable cultivation.'
+    };
+    
+    return seasonalTips[season] || '✅ Monitor crops regularly for optimal growth.';
+}
+
+/**
+ * Fetch weather from OpenWeatherMap API
+ */
+async function fetchWeatherFromAPI(state) {
+    const capital = stateCapitals[state];
+    if (!capital || !WEATHER_API_KEY) {
+        throw new Error('API key not configured or capital not found');
+    }
+    
+    const url = `${WEATHER_API_URL}?q=${capital},IN&appid=${WEATHER_API_KEY}&units=metric`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        
+        const data = await response.json();
+        
+        // Calculate rain probability from weather data
+        const rainProbability = data.clouds ? data.clouds.all : 0;
+        const condition = data.weather[0].main;
+        const weatherInfo = weatherConditions[condition] || weatherConditions['Clear'];
+        
+        // Get season for farming tips
+        const season = getCurrentSeason();
+        const crop = document.getElementById('crop-input')?.value.toLowerCase().trim() || '';
+        
+        return {
+            temperature: Math.round(data.main.temp),
+            condition: condition,
+            conditionDesc: weatherInfo.desc,
+            conditionIcon: weatherInfo.icon,
+            humidity: data.main.humidity,
+            rainProbability: rainProbability,
+            rainAmount: data.rain ? (data.rain['1h'] || data.rain['3h'] || 0) : 0,
+            forecast: `${rainProbability}% cloud cover, ${data.weather[0].description}`,
+            alert: data.main.temp > 40 ? '🔥 Heat wave - provide shade/irrigation' : null,
+            farmingTip: generateFarmingTip(condition, data.main.temp, rainProbability, crop, season),
+            source: 'OpenWeatherMap',
+            season: season,
+            windSpeed: data.wind?.speed || 0,
+            pressure: data.main.pressure
+        };
+    } catch (error) {
+        console.error('Weather API error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Main weather function - tries API first, falls back to mock
+ */
+async function getWeatherData(state, crop) {
+    // Try API if key is configured
+    if (WEATHER_API_KEY) {
+        try {
+            const apiData = await fetchWeatherFromAPI(state);
+            console.log('Weather data from API:', apiData);
+            return apiData;
+        } catch (error) {
+            console.log('API failed, using mock service:', error.message);
+        }
+    }
+    
+    // Fallback to mock service
+    console.log('Using Mock Weather Service');
+    return generateMockWeatherData(state, crop);
+}
+
 // Main function to get insights
-function getKisanInsights() {
+async function getKisanInsights() {
     const stateSelect = document.getElementById('state-select');
     const cropInput = document.getElementById('crop-input');
     const state = stateSelect.value;
@@ -557,14 +838,14 @@ function getKisanInsights() {
         return;
     }
     
-    // Update all cards
-    updateMandiCard(state, crop);
-    updateRecommendations(state, crop);
-    updateWeatherCard(state, crop);
-    
-    // Show data sections
+    // Show data sections first (for better UX)
     document.querySelectorAll('.kisan-card-empty').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.kisan-card-data').forEach(el => el.style.display = 'block');
+    
+    // Update all cards (weather is async)
+    updateMandiCard(state, crop);
+    updateRecommendations(state, crop);
+    await updateWeatherCard(state, crop); // Wait for weather to load
 }
 
 // Update Mandi Price card with table
@@ -698,37 +979,81 @@ function updateRecommendations(state, crop) {
     dataDiv.innerHTML = html;
 }
 
-// Update weather card
-function updateWeatherCard(state, crop) {
-    const weather = generateWeatherData(state, crop);
+// Update weather card - now async
+async function updateWeatherCard(state, crop) {
     const weatherContainer = document.getElementById('weather-card');
     const dataDiv = weatherContainer.querySelector('.kisan-card-data');
     
-    const alertHTML = weather.alert ? `
-        <div class="kisan-weather-alert">
-            <span>⚠️</span> ${weather.alert}
-        </div>
-    ` : '';
-    
+    // Show loading state
     dataDiv.innerHTML = `
-        ${alertHTML}
-        <div class="kisan-weather-main">
-            <span class="kisan-weather-temp">${weather.temperature}°C</span>
-            <span class="kisan-weather-condition">${weather.condition}</span>
-        </div>
-        <div class="kisan-data-item">
-            <span class="kisan-data-label">Humidity</span>
-            <span class="kisan-data-value">${weather.humidity}%</span>
-        </div>
-        <div class="kisan-data-item">
-            <span class="kisan-data-label">Rainfall Forecast</span>
-            <span class="kisan-data-value">${weather.forecast}</span>
-        </div>
-        <div class="kisan-data-item">
-            <span class="kisan-data-label">Crop Tip</span>
-            <span class="kisan-data-value" style="text-align: right; max-width: 60%;">${weather.cropTip}</span>
+        <div class="kisan-weather-loading">
+            <div class="kisan-loading-spinner"></div>
+            <span>Fetching weather data...</span>
         </div>
     `;
+    
+    try {
+        const weather = await getWeatherData(state, crop);
+        
+        const alertHTML = weather.alert ? `
+            <div class="kisan-weather-alert">
+                <span>⚠️</span> ${weather.alert}
+            </div>
+        ` : '';
+        
+        // Determine rain probability color
+        const rainColor = weather.rainProbability > 70 ? '#16a34a' : 
+                          weather.rainProbability > 40 ? '#d97706' : '#dc2626';
+        
+        dataDiv.innerHTML = `
+            ${alertHTML}
+            <div class="kisan-weather-main">
+                <span class="kisan-weather-icon-large">${weather.conditionIcon}</span>
+                <div class="kisan-weather-info">
+                    <span class="kisan-weather-temp">${weather.temperature}°C</span>
+                    <span class="kisan-weather-condition">${weather.conditionDesc}</span>
+                    <span class="kisan-weather-season">${weather.season.charAt(0).toUpperCase() + weather.season.slice(1)} Season</span>
+                </div>
+            </div>
+            
+            <div class="kisan-weather-stats">
+                <div class="kisan-weather-stat">
+                    <span class="kisan-weather-stat-label">💧 Humidity</span>
+                    <span class="kisan-weather-stat-value">${weather.humidity}%</span>
+                </div>
+                <div class="kisan-weather-stat">
+                    <span class="kisan-weather-stat-label">🌧️ Rain Probability</span>
+                    <span class="kisan-weather-stat-value" style="color: ${rainColor}; font-weight: 700;">${weather.rainProbability}%</span>
+                </div>
+                ${weather.rainAmount > 0 ? `
+                <div class="kisan-weather-stat">
+                    <span class="kisan-weather-stat-label">📊 Expected Rain</span>
+                    <span class="kisan-weather-stat-value">${weather.rainAmount}mm</span>
+                </div>
+                ` : ''}
+            </div>
+            
+            <div class="kisan-weather-farm-tip">
+                <div class="kisan-weather-farm-icon">🚜</div>
+                <div class="kisan-weather-farm-content">
+                    <div class="kisan-weather-farm-title">Farming Advisory</div>
+                    <div class="kisan-weather-farm-text">${weather.farmingTip}</div>
+                </div>
+            </div>
+            
+            <div class="kisan-weather-source">
+                <span>📡 Source: ${weather.source}</span>
+                <span class="kisan-weather-updated">Updated: ${new Date().toLocaleTimeString()}</span>
+            </div>
+        `;
+    } catch (error) {
+        dataDiv.innerHTML = `
+            <div class="kisan-weather-error">
+                <span>❌</span> Unable to fetch weather data. Please try again.
+            </div>
+        `;
+        console.error('Weather update error:', error);
+    }
 }
 
 // Export for global access
