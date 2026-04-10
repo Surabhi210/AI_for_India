@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kisan AI - Smart Farming Assistant | AI for India</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="image.png">
+<link rel="stylesheet" href="style.css">
+<style>
+/* Mandi Table Styles */
+.kisan-mandi-table-wrapper {
+    overflow-x: auto;
+    margin: 0 -16px;
+    padding: 0 16px;
+}
+
+.kisan-mandi-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.kisan-mandi-table th,
+.kisan-mandi-table td {
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.kisan-mandi-table th {
+    font-weight: 600;
+    color: #14532d;
+    background: #f0fdf4;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kisan-mandi-table td {
+    color: #374151;
+}
+
+.kisan-mandi-table tr:hover td {
+    background: #f9fafb;
+}
+
+.trend-indicator {
+    font-size: 11px;
+    margin-left: 4px;
+}
+
+.trend-up { color: #16a34a; font-weight: 600; }
+.trend-down { color: #dc2626; font-weight: 600; }
+.trend-stable { color: #6b7280; }
+
+/* Recommendation Styles */
+.kisan-rec-climate {
+    background: linear-gradient(90deg, #dbeafe, transparent);
+    border-left: 3px solid #3b82f6;
+    padding: 12px 16px;
+    margin: 0 -16px 16px;
+}
+
+.kisan-rec-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.kisan-rec-value {
+    font-size: 14px;
+    color: #1e40af;
+    font-weight: 500;
+}
+
+.kisan-rec-badge {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kisan-rec-badge.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.kisan-rec-badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.kisan-rec-section {
+    margin: 16px 0;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.kisan-rec-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+}
+
+.kisan-rec-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.kisan-tag {
+    background: #f0fdf4;
+    color: #166534;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    border: 1px solid #86efac;
+}
+
+.kisan-rec-tips {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.kisan-rec-tips ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.7;
+}
+
+.kisan-rec-tips li {
+    margin-bottom: 6px;
+}
+
+/* Weather Alert */
+.kisan-weather-alert {
+    background: linear-gradient(90deg, #fef3c7, #fffbeb);
+    border-left: 3px solid #f59e0b;
+    padding: 10px 14px;
+    margin: 0 -16px 16px;
+    font-size: 13px;
+    color: #92400e;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="index.html" class="nav-logo">
+  <img src="image.png">  
+  <div class="logo-text">AI for <span>India</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#features">Features</a></li>
+    <li><a href="#">Dashboard</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-lang-wrap">
+      <div class="lang-toggle" id="langToggle" onclick="toggleLangDropdown()">
+        <span style="font-size:15px;line-height:1;">🌐</span>
+        <span id="langLabel">हिंदी | EN</span>
+        <span class="lang-arrow">▾</span>
+      </div>
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-dropdown-item selected" onclick="switchLang('EN','हिंदी | EN',this)">English <span class="lang-check">✓</span></div>
+        <div class="lang-dropdown-item" onclick="switchLang('HI','हिंदी | EN',this)">हिंदी (Hindi)</div>
+        <div class="lang-dropdown-item" onclick="switchLang('TA','தமிழ் | EN',this)">தமிழ் (Tamil)</div>
+        <div class="lang-dropdown-item" onclick="switchLang('TE','తెలుగు | EN',this)">తెలుగు (Telugu)</div>
+        <div class="lang-dropdown-item" onclick="switchLang('BN','বাংলা | EN',this)">বাংলা (Bengali)</div>
+        <div class="lang-dropdown-item" onclick="switchLang('MR','मराठी | EN',this)">मराठी (Marathi)</div>
+      </div>
+    </div>
+    <button class="btn-login" onclick="openModal()">Log In →</button>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="index.html" onclick="toggleMenu()">Home</a>
+  <a href="index.html#features" onclick="toggleMenu()">Features</a>
+  <a href="#" onclick="toggleMenu()">Dashboard</a>
+  <a href="#" onclick="toggleMenu()">About</a>
+  <a href="#" onclick="toggleMenu()">Contact</a>
+  <button class="drawer-login" onclick="toggleMenu();openModal()">Log In →</button>
+</div>
+
+<!-- KISAN AI HERO -->
+<section class="kisan-hero">
+  <div class="kisan-hero-content">
+    <div class="kisan-badge">🌾 For Farmers</div>
+    <h1>Smart Farming with <span>Kisan AI</span></h1>
+    <p class="kisan-subtitle">Get personalized crop recommendations, real-time weather alerts, and live mandi prices. Empowering farmers across all 28 states with AI-powered insights in their language.</p>
+    <div class="kisan-stats">
+      <div class="kisan-stat">
+        <span class="kisan-stat-num">28</span>
+        <span class="kisan-stat-label">States Covered</span>
+      </div>
+      <div class="kisan-stat">
+        <span class="kisan-stat-num">50+</span>
+        <span class="kisan-stat-label">Crops Supported</span>
+      </div>
+      <div class="kisan-stat">
+        <span class="kisan-stat-num">22</span>
+        <span class="kisan-stat-label">Languages</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INPUT SECTION -->
+<section class="kisan-input-section">
+  <div class="kisan-input-container">
+    <h2 class="kisan-input-title">Get Personalized Farming Insights</h2>
+    <p class="kisan-input-subtitle">Select your state and crop to receive AI-powered recommendations</p>
+    
+    <div class="kisan-form">
+      <div class="kisan-form-group">
+        <label for="state-select">Select State</label>
+        <select id="state-select" class="kisan-select">
+          <option value="">Choose your state...</option>
+          <option value="andhra-pradesh">Andhra Pradesh</option>
+          <option value="arunachal-pradesh">Arunachal Pradesh</option>
+          <option value="assam">Assam</option>
+          <option value="bihar">Bihar</option>
+          <option value="chhattisgarh">Chhattisgarh</option>
+          <option value="goa">Goa</option>
+          <option value="gujarat">Gujarat</option>
+          <option value="haryana">Haryana</option>
+          <option value="himachal-pradesh">Himachal Pradesh</option>
+          <option value="jharkhand">Jharkhand</option>
+          <option value="karnataka">Karnataka</option>
+          <option value="kerala">Kerala</option>
+          <option value="madhya-pradesh">Madhya Pradesh</option>
+          <option value="maharashtra">Maharashtra</option>
+          <option value="manipur">Manipur</option>
+          <option value="meghalaya">Meghalaya</option>
+          <option value="mizoram">Mizoram</option>
+          <option value="nagaland">Nagaland</option>
+          <option value="odisha">Odisha</option>
+          <option value="punjab">Punjab</option>
+          <option value="rajasthan">Rajasthan</option>
+          <option value="sikkim">Sikkim</option>
+          <option value="tamil-nadu">Tamil Nadu</option>
+          <option value="telangana">Telangana</option>
+          <option value="tripura">Tripura</option>
+          <option value="uttar-pradesh">Uttar Pradesh</option>
+          <option value="uttarakhand">Uttarakhand</option>
+          <option value="west-bengal">West Bengal</option>
+        </select>
+      </div>
+      
+      <div class="kisan-form-group">
+        <label for="crop-input">Crop Name</label>
+        <input type="text" id="crop-input" class="kisan-input" placeholder="Enter crop name (e.g., Wheat, Rice, Cotton)">
+      </div>
+      
+      <button class="kisan-btn-primary" onclick="getInsights()">
+        <span>Get Insights</span>
+        <span class="kisan-btn-icon">→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT CARDS SECTION -->
+<section class="kisan-results-section">
+  <div class="kisan-results-container">
+    <!-- Crop Recommendations Card -->
+    <div class="kisan-card" id="crop-card">
+      <div class="kisan-card-header">
+        <div class="kisan-card-icon icon-crop">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <h3 class="kisan-card-title">Crop Recommendations</h3>
+      </div>
+      <div class="kisan-card-content">
+        <p class="kisan-card-empty">Select your state and crop to get personalized recommendations for sowing, irrigation, and harvesting.</p>
+        <div class="kisan-card-data" style="display: none;">
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Best Sowing Time</span>
+            <span class="kisan-data-value" id="sowing-time">-</span>
+          </div>
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Water Requirement</span>
+            <span class="kisan-data-value" id="water-req">-</span>
+          </div>
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Expected Yield</span>
+            <span class="kisan-data-value" id="expected-yield">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Weather Insights Card -->
+    <div class="kisan-card" id="weather-card">
+      <div class="kisan-card-header">
+        <div class="kisan-card-icon icon-weather">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19c0-3.037-2.463-5.5-5.5-5.5S6.5 15.963 6.5 19"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 22v-2"></path>
+            <path d="M20 12h-2"></path>
+            <path d="M6 12H4"></path>
+          </svg>
+        </div>
+        <h3 class="kisan-card-title">Weather Insights</h3>
+      </div>
+      <div class="kisan-card-content">
+        <p class="kisan-card-empty">Get real-time weather alerts and forecasts tailored for your farming needs.</p>
+        <div class="kisan-card-data" style="display: none;">
+          <div class="kisan-weather-main">
+            <span class="kisan-weather-temp" id="weather-temp">-</span>
+            <span class="kisan-weather-condition" id="weather-condition">-</span>
+          </div>
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Rainfall Forecast</span>
+            <span class="kisan-data-value" id="rainfall">-</span>
+          </div>
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Humidity</span>
+            <span class="kisan-data-value" id="humidity">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Live Mandi Prices Card -->
+    <div class="kisan-card" id="mandi-card">
+      <div class="kisan-card-header">
+        <div class="kisan-card-icon icon-mandi">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <h3 class="kisan-card-title">Live Mandi Prices</h3>
+      </div>
+      <div class="kisan-card-content">
+        <p class="kisan-card-empty">View current market prices from mandis across India to get the best value for your produce.</p>
+        <div class="kisan-card-data" style="display: none;">
+          <div class="kisan-data-item kisan-price-highlight">
+            <span class="kisan-data-label">Current Price</span>
+            <span class="kisan-data-value kisan-price" id="current-price">-</span>
+          </div>
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Price Trend</span>
+            <span class="kisan-data-value" id="price-trend">-</span>
+          </div>
+          <div class="kisan-data-item">
+            <span class="kisan-data-label">Nearest Mandi</span>
+            <span class="kisan-data-value" id="nearest-mandi">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo-text">AI for <span>India</span></div>
+      <p class="footer-tagline">Empowering 1.4 billion Indians with AI-powered tools for farming, health, education, and government services.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Features</h5>
+      <ul>
+        <li><a href="kisan-ai.html">Kisan AI</a></li>
+        <li><a href="#">Health AI</a></li>
+        <li><a href="#">Shiksha Bot</a></li>
+        <li><a href="#">Gov Services</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">API Docs</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Tutorials</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Partners</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Legal</h5>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 AI for India. All rights reserved. Built for Bharat 🇮🇳</p>
+    <p>Made with ❤️ for Indian farmers</p>
+  </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-logo">
+      <img src="image.png" alt="Logo">
+      <span class="modal-logo-text">AI for <span>India</span></span>
+    </div>
+    <h2>Welcome Back</h2>
+    <p class="modal-sub">Log in to access your personalized farming dashboard</p>
+    
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab(this, 'phone')">Phone</button>
+      <button class="modal-tab" onclick="switchTab(this, 'email')">Email</button>
+    </div>
+    
+    <div id="phone-tab">
+      <div class="modal-field">
+        <label>Phone Number</label>
+        <input type="tel" placeholder="+91 98765 43210">
+      </div>
+    </div>
+    
+    <div id="email-tab" style="display:none">
+      <div class="modal-field">
+        <label>Email Address</label>
+        <input type="email" placeholder="farmer@example.com">
+      </div>
+      <div class="modal-field">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+    </div>
+    
+    <button class="modal-btn">Continue →</button>
+    
+    <div class="modal-or">or continue with</div>
+    
+    <div class="modal-social">
+      <button class="modal-social-btn">Google</button>
+      <button class="modal-social-btn">PhonePe</button>
+    </div>
+    
+    <p class="modal-footer-text">Don't have an account? <a>Register free</a></p>
+  </div>
+</div>
+
+<script src="kisan-logic.js"></script>
+<script>
+// Language Dropdown
+function toggleLangDropdown() {
+  document.getElementById('langDropdown').classList.toggle('open');
+}
+
+function switchLang(lang, label, el) {
+  document.getElementById('langLabel').textContent = label;
+  document.querySelectorAll('.lang-dropdown-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  toggleLangDropdown();
+}
+
+// Mobile Menu
+function toggleMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobileDrawer');
+  hamburger.classList.toggle('open');
+  drawer.classList.toggle('open');
+}
+
+// Modal
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target.id === 'modalOverlay') {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}
+
+function switchTab(btn, tab) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('phone-tab').style.display = tab === 'phone' ? 'block' : 'none';
+  document.getElementById('email-tab').style.display = tab === 'email' ? 'block' : 'none';
+}
+
+// Get Insights - calls the logic from kisan-logic.js
+function getInsights() {
+  // Call the main function from kisan-logic.js
+  if (typeof getKisanInsights === 'function') {
+    getKisanInsights();
+  } else {
+    // Fallback if script not loaded
+    const state = document.getElementById('state-select').value;
+    const crop = document.getElementById('crop-input').value;
+    
+    if (!state || !crop) {
+      alert('Please select your state and enter a crop name');
+      return;
+    }
+    
+    document.querySelectorAll('.kisan-card-empty').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.kisan-card-data').forEach(el => el.style.display = 'block');
+  }
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.nav-lang-wrap')) {
+    document.getElementById('langDropdown').classList.remove('open');
+  }
+});
+</script>
+
+</body>
+</html>
